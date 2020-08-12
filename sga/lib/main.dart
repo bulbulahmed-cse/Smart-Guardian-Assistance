@@ -9,12 +9,11 @@ import 'dart:async';
 import 'loginPage.dart';
 
 void main() {
-  runApp(MultiProvider(
-      child: MaterialApp(
+  runApp( MaterialApp(
         title: 'SGA',
         debugShowCheckedModeBanner: false,
         home: Intropage(),
-      )));
+      ));
 }
 
 class Intropage extends StatefulWidget {

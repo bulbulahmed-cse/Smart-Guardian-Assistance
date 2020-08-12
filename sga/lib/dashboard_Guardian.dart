@@ -3,6 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:sga/GuardianPage/StudentProfile.dart';
+import 'package:sga/Notice.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 import 'main.dart';
@@ -177,6 +178,7 @@ class _Dashboard_GuardianState extends State<Dashboard_Guardian> {
                         child: InkWell(
                           child: box(Icons.notifications, 'Notice',context),
                           onTap: () {
+                            Navigator.push(context, MaterialPageRoute(builder: (context)=>Notice()));
                           },
                         ),
                       ),

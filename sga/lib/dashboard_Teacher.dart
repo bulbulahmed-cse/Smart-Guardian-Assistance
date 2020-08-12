@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:sga/Notice.dart';
 import 'package:sga/TeacherPage/TeacherProfile.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
@@ -143,6 +144,7 @@ class _Dashboard_TeacherState extends State<Dashboard_Teacher> {
                       child: InkWell(
                         child: box(Icons.notifications, 'Notice', context),
                         onTap: () {
+                          Navigator.push(context, MaterialPageRoute(builder: (context)=>Notice()));
 
                         },
                       ),
