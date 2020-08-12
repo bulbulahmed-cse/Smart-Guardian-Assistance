@@ -1,6 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:sga/TeacherPage/TeacherProfile.dart';
+import 'package:sga/main.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class TeacherDrawer extends StatefulWidget {
   @override
@@ -8,6 +10,14 @@ class TeacherDrawer extends StatefulWidget {
 }
 
 class _TeacherDrawerState extends State<TeacherDrawer> {
+
+  var _userName='',_userId='',_userImages='';
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    __getData();
+  }
   @override
   Widget build(BuildContext context) {
     return Drawer(
@@ -39,7 +49,7 @@ class _TeacherDrawerState extends State<TeacherDrawer> {
                             child: InkWell(
                               onTap: ()=>Navigator.push(context, MaterialPageRoute(builder: (context) => TeacherProfilePage(true),)),
                               child: CircleAvatar(
-                                child: Icon(Icons.person_outline),
+                                backgroundImage: NetworkImage(_userImages),
                                 radius: 50,
                               ),
                             ),
@@ -60,14 +70,14 @@ class _TeacherDrawerState extends State<TeacherDrawer> {
                           onTap: ()=>Navigator.push(context, MaterialPageRoute(builder: (context) => TeacherProfilePage(true),)),
                           child: Container(
                               alignment: Alignment.centerLeft,
-                              child: Text("Kaji tasnim binte mohona good girl",style: TextStyle(fontWeight: FontWeight.bold),)),
+                              child: Text(_userName,style: TextStyle(fontWeight: FontWeight.bold),)),
                         ),
                         SizedBox(
                           height: 2,
                         ),
                         Container(
                             alignment: Alignment.centerLeft,
-                            child: Text('student Id')),
+                            child: Text(_userId)),
                       ],
                     ),
                   ),
@@ -98,10 +108,27 @@ class _TeacherDrawerState extends State<TeacherDrawer> {
           ListTile(
             title: Text("Logout"),
             leading: Icon(Icons.remove),
-            onTap: () => print('notice'),
+            onTap: () async {
+              SharedPreferences prefs = await SharedPreferences.getInstance();
+              await prefs.remove('_userId');
+              await prefs.remove('_userType');
+              await prefs.remove('_rememberMe');
+              await prefs.remove('_userImages');
+              Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => Intropage()));
+            },
           ),
         ],
       ),
     );
+  }
+
+  Future<void> __getData() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _userId = prefs.getString('_userId');
+      _userName = prefs.getString('_userName');
+      _userImages = prefs.getString('_userImages');
+    });
+
   }
 }

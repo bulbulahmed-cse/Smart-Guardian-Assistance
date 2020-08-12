@@ -1,3 +1,4 @@
+import 'dart:convert';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -9,30 +10,29 @@ import 'package:sga/dashboard_Teacher.dart';
 import 'package:sga/main.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
+import 'package:http/http.dart' as http;
+import 'package:progress_dialog/progress_dialog.dart';
 
 class LoginPage extends StatefulWidget {
   @override
-
   _LoginPageState createState() => _LoginPageState();
 }
 
 class _LoginPageState extends State<LoginPage> {
-  var _userId = '', _password = '';
-  var _userIdDb='bulbul8167',_passwordDb='123456',_userType='G';
+  var _userId = '', _password = '',_userType='';
+
 
   bool _rememberMe = false;
+ ProgressDialog _progressDialog;
 
 
-
-
-
-  Widget _loginButton(){
-
+  Widget _loginButton() {
     return Container(
       width: double.infinity,
       child: RaisedButton(
         onPressed: () {
+          _progressDialog.style(message: 'Loading...');
+          _progressDialog.show();
           _logIn();
         },
         padding: EdgeInsets.all(15),
@@ -56,6 +56,7 @@ class _LoginPageState extends State<LoginPage> {
           border: Border(bottom: BorderSide(color: Colors.grey[100]))),
       child: TextField(
         obscureText: true,
+
         onChanged: (input) => _password = input,
         decoration: InputDecoration(
             border: InputBorder.none,
@@ -72,6 +73,7 @@ class _LoginPageState extends State<LoginPage> {
       decoration: BoxDecoration(
           border: Border(bottom: BorderSide(color: Colors.grey[100]))),
       child: TextField(
+
         onChanged: (input) => _userId = input,
         decoration: InputDecoration(
             border: InputBorder.none,
@@ -116,11 +118,9 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
-
-
   @override
   Widget build(BuildContext context) {
-
+    _progressDialog = ProgressDialog(context, type: ProgressDialogType.Normal);
     return WillPopScope(
       onWillPop: _onBackPressed,
       child: MaterialApp(
@@ -134,8 +134,9 @@ class _LoginPageState extends State<LoginPage> {
                   Container(
                     height: MediaQuery.of(context).size.height * .3,
                     decoration: BoxDecoration(
-                      borderRadius:
-                          BorderRadius.only(bottomRight: Radius.circular(60),bottomLeft: Radius.circular(60)),
+                      borderRadius: BorderRadius.only(
+                          bottomRight: Radius.circular(60),
+                          bottomLeft: Radius.circular(60)),
                       color: Colors.blueAccent,
                     ),
                     child: Stack(
@@ -192,7 +193,7 @@ class _LoginPageState extends State<LoginPage> {
                         FadeAnimation(
                           1.4,
                           _loginButton(),
-                        )
+                        ),
                       ],
                     ),
                   )
@@ -224,23 +225,14 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
-  void _logIn() async {
-
-    
-
-
-    if(_userId==_userIdDb && _password==_passwordDb){
-
-      if(_userType=='G'){
-        __rememberMe();
-        print('Guardian');
-        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>dashboard_Guardian()));
-      }else if(_userType=='T'){
-        __rememberMe();
-        print('Teacher');
-        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>dashboard_Teacher()));
-      }
-    }else{
+  Future<void> _logIn() async {
+    final response =
+        await http.post("https://smartguardianassistant.000webhostapp.com/php/login.php", body: {
+      "userId": _userId,
+      "userPass": _password,
+    });
+    if(response.body.length==0){
+      _progressDialog.hide();
       Fluttertoast.showToast(
           msg: "User Id or Password incorrect",
           toastLength: Toast.LENGTH_LONG,
@@ -248,22 +240,35 @@ class _LoginPageState extends State<LoginPage> {
           timeInSecForIosWeb: 1,
           backgroundColor: Colors.red,
           textColor: Colors.white,
-          fontSize: 16.0
-      );
+          fontSize: 16.0);
+    }else{
+      var data=jsonDecode(response.body);
+      _userType=data[0]['userType'];
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      await prefs.setString('_userId', _userId);
+      await prefs.setString('_userType', _userType);
+      _progressDialog.hide();
+      if (_userType == 'student') {
+        __rememberMe();
+        print('Guardian');
+        Navigator.pushReplacement(context,
+            MaterialPageRoute(builder: (context) => Dashboard_Guardian()));
+      } else if (_userType == 'teacher') {
+        __rememberMe();
+        print('Teacher');
+        Navigator.pushReplacement(context,
+            MaterialPageRoute(builder: (context) => Dashboard_Teacher()));
+      }
 
     }
   }
 
-   Future<bool> __rememberMe() async {
-    if(_rememberMe==true){
+  Future<bool> __rememberMe() async {
+    if (_rememberMe == true) {
       SharedPreferences prefs = await SharedPreferences.getInstance();
-      await prefs.setString('_userId', _userId);
-      await prefs.setString('_userType',_userType);
+      await prefs.setBool('_rememberMe', _rememberMe);
       return true;
-    }else return false;
+    } else
+      return false;
   }
-
 }
-
-
-

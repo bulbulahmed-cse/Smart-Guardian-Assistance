@@ -1,6 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:sga/GuardianPage/StudentProfile.dart';
+import 'package:sga/main.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class GuardianDrawer extends StatefulWidget {
   @override
@@ -8,6 +10,15 @@ class GuardianDrawer extends StatefulWidget {
 }
 
 class _GuardianDrawerState extends State<GuardianDrawer> {
+  var _studentName='',_studentId='',_studentImage='';
+
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    __getData();
+  }
   @override
   Widget build(BuildContext context) {
     return Drawer(
@@ -38,7 +49,7 @@ class _GuardianDrawerState extends State<GuardianDrawer> {
                           child: InkWell(
                             onTap: ()=>Navigator.push(context, MaterialPageRoute(builder: (context) => StudentProfilePage(true),)),
                             child: CircleAvatar(
-                              child: Icon(Icons.person_outline),
+                              backgroundImage: NetworkImage(_studentImage),
                               radius: 50,
                             ),
                           ),
@@ -58,14 +69,14 @@ class _GuardianDrawerState extends State<GuardianDrawer> {
                           onTap: ()=>Navigator.push(context, MaterialPageRoute(builder: (context) => StudentProfilePage(true),)),
                           child: Container(
                               alignment: Alignment.centerLeft,
-                              child: Text("Kaji tasnim binte mohona good girl",style: TextStyle(fontWeight: FontWeight.bold),)),
+                              child: Text(_studentName,style: TextStyle(fontWeight: FontWeight.bold),)),
                         ),
                         SizedBox(
                           height: 2,
                         ),
                         Container(
                             alignment: Alignment.centerLeft,
-                            child: Text('student Id')),
+                            child: Text(_studentId)),
                       ],
                     ),
                   ),
@@ -106,10 +117,27 @@ class _GuardianDrawerState extends State<GuardianDrawer> {
           ListTile(
             title: Text("Logout"),
             leading: Icon(Icons.remove),
-            onTap: () => print('notice'),
+            onTap: () async {
+              SharedPreferences prefs = await SharedPreferences.getInstance();
+              await prefs.remove('_userId');
+              await prefs.remove('_userType');
+              await prefs.remove('_rememberMe');
+              await prefs.remove('_userImages');
+              Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => Intropage()));
+            },
           ),
         ],
       ),
     );
+  }
+
+  Future<void> __getData() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _studentId = prefs.getString('_userId');
+      _studentName = prefs.getString('_userName');
+      _studentImage = prefs.getString('_userImages');
+    });
+
   }
 }

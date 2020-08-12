@@ -1,12 +1,22 @@
+import 'dart:convert';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:sga/GuardianPage/StudentProfile.dart';
-import 'package:sga/loginPage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
+import 'package:http/http.dart' as http;
 import 'main.dart';
 
-class dashboard_Guardian extends StatelessWidget {
+class Dashboard_Guardian extends StatefulWidget {
+
+  @override
+  _Dashboard_GuardianState createState() => _Dashboard_GuardianState();
+}
+
+class _Dashboard_GuardianState extends State<Dashboard_Guardian> {
+
+  var _studentName='',_studentId='',_studentImage='';
+
   Widget header(context) {
     return Stack(
       children: <Widget>[
@@ -24,7 +34,7 @@ class dashboard_Guardian extends StatelessWidget {
           child: InkWell(
             onTap: ()=>Navigator.push(context, MaterialPageRoute(builder: (context) => StudentProfilePage(true),)),
             child: CircleAvatar(
-              child: Image.asset('assets/images/sga.png'),
+              backgroundImage: NetworkImage(_studentImage),
               radius: 50,
             ),
           ),
@@ -43,7 +53,7 @@ class dashboard_Guardian extends StatelessWidget {
                   child: Container(
                       alignment: Alignment.centerLeft,
                       child: Text(
-                        "Kaji Tasnim binte Mohona good",
+                        _studentName,
                         style:
                             TextStyle(fontSize: MediaQuery.of(context).size.width*.042, fontWeight: FontWeight.bold),
                       )),
@@ -54,7 +64,7 @@ class dashboard_Guardian extends StatelessWidget {
                 Container(
                     alignment: Alignment.centerLeft,
                     child: Text(
-                      "Student Id",
+                      _studentId,
                       style:
                           TextStyle(fontStyle: FontStyle.italic, fontSize: MediaQuery.of(context).size.width*.042),
                     )),
@@ -108,74 +118,114 @@ class dashboard_Guardian extends StatelessWidget {
     );
   }
 
+  __getData() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    _studentId = prefs.getString('_userId');
+    try {
+      final response =
+      await http.post(
+          "https://smartguardianassistant.000webhostapp.com/php/studentprofiledata.php",
+          body: {
+            "userId": _studentId,
+          });
+      if (response.body.length == 0) {
+        Fluttertoast.showToast(
+            msg: "Error",
+            toastLength: Toast.LENGTH_LONG,
+            gravity: ToastGravity.BOTTOM,
+            timeInSecForIosWeb: 1,
+            backgroundColor: Colors.red,
+            textColor: Colors.white,
+            fontSize: 16.0);
+      } else {
+        var data = jsonDecode(response.body);
+        setState(() {
+          _studentName = data[0]['student_name'];
+          _studentImage = data[0]['image'];
+
+        });
+
+      }
+    }catch(e){
+      print(e);
+    }
+    await prefs.setString('_userName', _studentName);
+    await prefs.setString('_userImages', _studentImage);
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    __getData();
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: Scaffold(
-        body: SingleChildScrollView(
-          child: Column(
-            children: <Widget>[
-              header(context),
-              Container(
-                height: 155,
-                child: Row(
-                  children: <Widget>[
-                    Expanded(
-                      child: InkWell(
-                        child: box(Icons.notifications, 'Notice',context),
-                        onTap: () async {
-                          SharedPreferences prefs =await SharedPreferences.getInstance();
-                          prefs.remove('_userId');
-                          prefs.remove('_userType');
-
-                          Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>Intropage()));
-                        },
+        debugShowCheckedModeBanner: false,
+        home: Scaffold(
+          body: SingleChildScrollView(
+            child: Column(
+              children: <Widget>[
+                header(context),
+                Container(
+                  height: 155,
+                  child: Row(
+                    children: <Widget>[
+                      Expanded(
+                        child: InkWell(
+                          child: box(Icons.notifications, 'Notice',context),
+                          onTap: () {
+                          },
+                        ),
                       ),
-                    ),
-                    Expanded(child: box(Icons.message, 'Messages',context)),
-                  ],
+                      Expanded(child: box(Icons.message, 'Messages',context)),
+                    ],
+                  ),
                 ),
-              ),
-              Container(
-                height: 155,
-                child: Row(
-                  children: <Widget>[
-                    Expanded(child: box(Icons.history, 'Activity',context)),
-                    Expanded(child: box(Icons.equalizer, 'Result',context)),
-                  ],
+                Container(
+                  height: 155,
+                  child: Row(
+                    children: <Widget>[
+                      Expanded(child: box(Icons.history, 'Activity',context)),
+                      Expanded(child: box(Icons.equalizer, 'Result',context)),
+                    ],
+                  ),
                 ),
-              ),
-              Container(
-                height: 155,
-                child: Row(
-                  children: <Widget>[
-                    Expanded(child: box(Icons.account_balance, 'Account',context)),
-                    Expanded(child: box(Icons.money_off, 'Expense Report',context)),
-                  ],
+                Container(
+                  height: 155,
+                  child: Row(
+                    children: <Widget>[
+                      Expanded(child: box(Icons.account_balance, 'Account',context)),
+                      Expanded(child: box(Icons.money_off, 'Expense Report',context)),
+                    ],
+                  ),
                 ),
-              ),
-              Container(
-                height: 155,
-                child: Row(
-                  children: <Widget>[
-                    Expanded(child: InkWell(
-                      child: box(Icons.remove, 'Logout',context),
-                      onTap: () async {
-                        SharedPreferences prefs =await SharedPreferences.getInstance();
-                        //await prefs.remove('_userId');
-                        await prefs.setString('_userType','T');
-                        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>Intropage()));
-                      },
-                    ),),
-                    Expanded(child: SizedBox()),
-                  ],
+                Container(
+                  height: 155,
+                  child: Row(
+                    children: <Widget>[
+                      Expanded(child: InkWell(
+                        child: box(Icons.remove, 'Logout', context),
+                        onTap: () async {
+                          SharedPreferences prefs = await SharedPreferences.getInstance();
+                          await prefs.remove('_userId');
+                          await prefs.remove('_userType');
+                          await prefs.remove('_rememberMe');
+                          await prefs.remove('_userImages');
+                          Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => Intropage()));
+                        },
+                      ),),
+                      Expanded(child: SizedBox()),
+                    ],
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
-      ),
     );
   }
+
 }

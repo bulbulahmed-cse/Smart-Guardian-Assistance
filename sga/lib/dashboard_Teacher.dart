@@ -1,11 +1,22 @@
-import 'package:flutter/material.dart';
-import 'package:sga/TeacherPage/TeacherProfile.dart';
-import 'package:sga/loginPage.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'dart:convert';
 
+import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:sga/TeacherPage/TeacherProfile.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:http/http.dart' as http;
 import 'main.dart';
 
-class dashboard_Teacher extends StatelessWidget {
+class Dashboard_Teacher extends StatefulWidget {
+  @override
+  _Dashboard_TeacherState createState() => _Dashboard_TeacherState();
+}
+
+class _Dashboard_TeacherState extends State<Dashboard_Teacher> {
+  var _userName='',_userId='',_userImages='';
+
+
+
   Widget header(context) {
     return Stack(
       children: <Widget>[
@@ -23,7 +34,7 @@ class dashboard_Teacher extends StatelessWidget {
           child: InkWell(
             onTap: ()=>Navigator.push(context, MaterialPageRoute(builder: (context) => TeacherProfilePage(true),)),
             child: CircleAvatar(
-              child: Image.asset('assets/images/sga.png'),
+              backgroundImage: NetworkImage(_userImages),
               radius: 50,
             ),
           ),
@@ -41,7 +52,7 @@ class dashboard_Teacher extends StatelessWidget {
                     child: InkWell(
                       onTap: ()=>Navigator.push(context, MaterialPageRoute(builder: (context) => TeacherProfilePage(true),)),
                       child: Text(
-                        "Kaji Tasnim binte Mohona good",
+                        _userName,
                         style: TextStyle(
                             fontSize: MediaQuery.of(context).size.width * .042,
                             fontWeight: FontWeight.bold),
@@ -53,7 +64,7 @@ class dashboard_Teacher extends StatelessWidget {
                 Container(
                     alignment: Alignment.centerLeft,
                     child: Text(
-                      "Student Id",
+                      _userId,
                       style: TextStyle(
                           fontStyle: FontStyle.italic,
                           fontSize: MediaQuery.of(context).size.width * .042),
@@ -107,6 +118,13 @@ class dashboard_Teacher extends StatelessWidget {
   }
 
   @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    __getData();
+  }
+
+  @override
   Widget build(BuildContext context) {
     var _height = MediaQuery.of(context).size.height;
     var _width = MediaQuery.of(context).size.width;
@@ -124,14 +142,8 @@ class dashboard_Teacher extends StatelessWidget {
                     Expanded(
                       child: InkWell(
                         child: box(Icons.notifications, 'Notice', context),
-                        onTap: () async {
-                          SharedPreferences prefs =
-                              await SharedPreferences.getInstance();
+                        onTap: () {
 
-                          Navigator.pushReplacement(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => Intropage()));
                         },
                       ),
                     ),
@@ -158,14 +170,12 @@ class dashboard_Teacher extends StatelessWidget {
                       child: InkWell(
                         child: box(Icons.remove, 'Logout', context),
                         onTap: () async {
-                          SharedPreferences prefs =
-                              await SharedPreferences.getInstance();
-                          //await prefs.remove('_userId');
-                          await prefs.setString('_userType', 'G');
-                          Navigator.pushReplacement(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => Intropage()));
+                          SharedPreferences prefs = await SharedPreferences.getInstance();
+                          await prefs.remove('_userId');
+                          await prefs.remove('_userType');
+                          await prefs.remove('_rememberMe');
+                          await prefs.remove('_userImages');
+                          Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => Intropage()));
                         },
                       ),
                     ),
@@ -178,5 +188,40 @@ class dashboard_Teacher extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  __getData() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    _userId = prefs.getString('_userId');
+    try {
+      final response =
+      await http.post(
+          "https://smartguardianassistant.000webhostapp.com/php/teacher-profile-data.php",
+          body: {
+            "userId": _userId,
+          });
+      if (response.body.length == 0) {
+        Fluttertoast.showToast(
+            msg: "Error",
+            toastLength: Toast.LENGTH_LONG,
+            gravity: ToastGravity.BOTTOM,
+            timeInSecForIosWeb: 1,
+            backgroundColor: Colors.red,
+            textColor: Colors.white,
+            fontSize: 16.0);
+      } else {
+        var data = jsonDecode(response.body);
+        setState(() {
+          _userName = data[0]['name'];
+          _userImages = data[0]['image'];
+
+        });
+
+      }
+    }catch(e){
+      print(e);
+    }
+    await prefs.setString('_userName', _userName);
+    await prefs.setString('_userImages', _userImages);
   }
 }
