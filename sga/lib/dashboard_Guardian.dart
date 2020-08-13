@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:sga/GuardianPage/ExpenseReport.dart';
 import 'package:sga/GuardianPage/StudentProfile.dart';
 import 'package:sga/Notice.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -200,7 +201,11 @@ class _Dashboard_GuardianState extends State<Dashboard_Guardian> {
                   child: Row(
                     children: <Widget>[
                       Expanded(child: box(Icons.account_balance, 'Account',context)),
-                      Expanded(child: box(Icons.money_off, 'Expense Report',context)),
+                      Expanded(child: InkWell(
+                          onTap: () {
+                            Navigator.push(context, MaterialPageRoute(builder: (context)=>ExpenseReport()));
+                          },
+                          child: box(Icons.money_off, 'Expense Report',context))),
                     ],
                   ),
                 ),

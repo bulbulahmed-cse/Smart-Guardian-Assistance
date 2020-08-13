@@ -1,46 +1,48 @@
 import 'dart:convert';
-
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'dart:async';
 import 'package:http/http.dart' as http;
 import 'package:sga/Animation/FadeAnimation.dart';
 import 'package:sga/Drawer/GuardianDrawer.dart';
 import 'package:sga/Drawer/TeacherDrawer.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class Notice extends StatefulWidget {
+class ExpenseReport extends StatefulWidget {
   @override
-  _NoticeState createState() => _NoticeState();
+  _ExpenseReportState createState() => _ExpenseReportState();
 }
 
-class _NoticeState extends State<Notice> {
-  var noticeData, _userType='';
-  _getUser() async {
+class _ExpenseReportState extends State<ExpenseReport> {
+  var expenseData, _userType, _userId;
+
+  Future _getData() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     _userType = prefs.getString('_userType');
-    print(_userType);
-  }
-  Future _getData() async {
-    var response = await http
-        .get("https://smartguardianassistant.000webhostapp.com/php/notice.php");
+    _userId = prefs.getString('_userId');
+    print(_userType + _userId);
+    var response = await http.post(
+        "https://smartguardianassistant.000webhostapp.com/php/expense-report.php",
+        body: {
+          "userId": _userId,
+        });
     setState(() {
-      noticeData = json.decode(response.body);
-     // print(noticeData);
+      expenseData = json.decode(response.body);
+      print(expenseData);
     });
-    return noticeData;
+    return expenseData;
   }
+
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    _getUser();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Notice'),
+        title: Text('Expense Report'),
         actions: <Widget>[
           IconButton(
             icon: const Icon(Icons.arrow_back),
@@ -51,7 +53,7 @@ class _NoticeState extends State<Notice> {
         ],
         backgroundColor: Colors.blueAccent,
       ),
-      drawer:_userType == 'teacher' ? TeacherDrawer() : GuardianDrawer(),
+      drawer: _userType == 'teacher' ? TeacherDrawer() : GuardianDrawer(),
       body: Container(
         child: FutureBuilder(
           future: _getData(),
@@ -66,8 +68,9 @@ class _NoticeState extends State<Notice> {
               return ListView.builder(
                 itemCount: snapshot.data.length,
                 itemBuilder: (BuildContext context, int index) {
-                  return FadeAnimation(1.4,
-                     Padding(
+                  return FadeAnimation(
+                    1.4,
+                    Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: Container(
                         decoration: BoxDecoration(
@@ -75,9 +78,21 @@ class _NoticeState extends State<Notice> {
                           borderRadius: BorderRadius.circular(10),
                         ),
                         child: ListTile(
-                          title: Text(snapshot.data[index]["noticeName"],style: TextStyle(color: Colors.black,fontWeight: FontWeight.bold),),
-                          subtitle: Text(snapshot.data[index]["date"]),
-                          onTap:(){ Navigator.push(context, MaterialPageRoute(builder: (context)=>DetailsPage(snapshot.data[index])));},
+                          title: Text(snapshot.data[index]["expenseTitle"],style: TextStyle(color: Colors.black,fontWeight: FontWeight.bold),),
+                          subtitle: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: <Widget>[
+                              Text(snapshot.data[index]["date_time"]),
+                              Text(snapshot.data[index]["amount"] + "Tk",style: TextStyle(color: Colors.black,fontWeight: FontWeight.bold),),
+                            ],
+                          ),
+                          onTap: () {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) =>
+                                        DetailsPage(snapshot.data[index])));
+                          },
                           leading: CircleAvatar(backgroundColor: Colors.white60,
                             child: Image.asset("assets/images/sga.png"),
                           ),
@@ -102,16 +117,15 @@ class DetailsPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(data["noticeName"]),
+        title: Text(data["expenseTitle"]),
         backgroundColor: Colors.blueAccent,
       ),
       body: Container(
         child: Padding(
           padding: const EdgeInsets.all(8.0),
-          child: Text(data['description']),
+          child: Text(data['expense_details']),
         ),
       ),
-
     );
   }
 }
