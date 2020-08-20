@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:sga/GuardianPage/Account.dart';
 import 'package:sga/GuardianPage/ExpenseReport.dart';
 import 'package:sga/GuardianPage/StudentProfile.dart';
 import 'package:sga/main.dart';
@@ -108,7 +109,7 @@ class _GuardianDrawerState extends State<GuardianDrawer> {
           ListTile(
             title: Text("Account"),
             leading: Icon(Icons.account_balance),
-            onTap: () => print('account'),
+            onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context)=>Account())),
           ),
           ListTile(
             title: Text("Expense report"),
