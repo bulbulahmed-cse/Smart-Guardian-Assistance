@@ -14,6 +14,7 @@ class Account extends StatefulWidget {
 
 class _AccountState extends State<Account> {
   var accountData, _userType, _userId, _accountNo = '', _amount;
+  var _isLoading=true;
   List<Datas> _datas = [];
 
   Future _getHistory() async {
@@ -53,21 +54,49 @@ class _AccountState extends State<Account> {
 
         print(datas);
       }
+      _isLoading=false;
     });
+  }
 
-//    var response = await http
-////        .get("https://smartguardianassistant.000webhostapp.com/php/notice.php");
-////    setState(() {
-////      accountData = json.decode(response.body);
-////
-////      for (var d in accountData){
-////        Datas datas= Datas(index: d['no'],noticeName: d['noticeName'],date: d['date']);
-////        _datas.add(datas);
-////
-////        print(datas);
-////      }
-////    return _datas;
-////    });
+  Widget textItem(_name,_hint,_enable){
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Row(
+        mainAxisSize: MainAxisSize.max,
+        children: <Widget>[
+          Expanded(
+            child: Container(
+              decoration: BoxDecoration(
+                color: Colors.blueGrey,
+                borderRadius: BorderRadius.circular(5),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Column(
+                  children: <Widget>[
+                    Container(
+                      child: Text(
+                        _name,
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold),
+                      ),
+                      alignment: Alignment.centerLeft,
+                    ),
+                    TextField(
+                      decoration: InputDecoration(
+                        hintText: _hint,
+                        hintStyle: TextStyle(color: Colors.black),
+                      ),
+                      enabled: _enable,
+                    )
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
   @override
@@ -95,131 +124,13 @@ class _AccountState extends State<Account> {
         backgroundColor: Colors.blueAccent,
       ),
       drawer: _userType == 'teacher' ? TeacherDrawer() : GuardianDrawer(),
-      body: _accountNo.isEmpty
-          ? Container(
-              child: Center(
-                child: Text("loading..."),
-              ),
-            )
-          : SingleChildScrollView(
+      body:_isLoading?Center(child: CircularProgressIndicator()): SingleChildScrollView(
               child: Column(
                 verticalDirection: VerticalDirection.down,
                 children: [
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.max,
-                      children: <Widget>[
-                        Expanded(
-                          child: Container(
-                            decoration: BoxDecoration(
-                              color: Colors.blueGrey,
-                              borderRadius: BorderRadius.circular(5),
-                            ),
-                            child: Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Column(
-                                children: <Widget>[
-                                  Container(
-                                    child: Text(
-                                      'Student Id:',
-                                      style: TextStyle(
-                                          fontWeight: FontWeight.bold),
-                                    ),
-                                    alignment: Alignment.centerLeft,
-                                  ),
-                                  TextField(
-                                    decoration: InputDecoration(
-                                      hintText: _userId,
-                                      hintStyle: TextStyle(color: Colors.black),
-                                    ),
-                                    enabled: false,
-                                  )
-                                ],
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.max,
-                      children: <Widget>[
-                        Expanded(
-                          child: Container(
-                            decoration: BoxDecoration(
-                              color: Colors.blueGrey,
-                              borderRadius: BorderRadius.circular(5),
-                            ),
-                            child: Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Column(
-                                children: <Widget>[
-                                  Container(
-                                    child: Text(
-                                      'Account No:',
-                                      style: TextStyle(
-                                          fontWeight: FontWeight.bold),
-                                    ),
-                                    alignment: Alignment.centerLeft,
-                                  ),
-                                  TextField(
-                                    decoration: InputDecoration(
-                                      hintText: _accountNo,
-                                      hintStyle: TextStyle(color: Colors.black),
-                                    ),
-                                    enabled: false,
-                                  )
-                                ],
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.max,
-                      children: <Widget>[
-                        Expanded(
-                          child: Container(
-                            decoration: BoxDecoration(
-                              color: Colors.blueGrey,
-                              borderRadius: BorderRadius.circular(5),
-                            ),
-                            child: Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Column(
-                                children: <Widget>[
-                                  Container(
-                                    child: Text(
-                                      'Total Amount:',
-                                      style: TextStyle(
-                                          fontWeight: FontWeight.bold),
-                                    ),
-                                    alignment: Alignment.centerLeft,
-                                  ),
-                                  TextField(
-                                    decoration: InputDecoration(
-                                      hintText: _amount.toString() + 'TK',
-                                      hintStyle: TextStyle(color: Colors.black),
-                                    ),
-                                    enabled: false,
-
-                                  )
-                                ],
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
+                  textItem('Student Id', _userId, false),
+                  textItem('Account No', _accountNo, false),
+                  textItem('Amount', _amount, false),
                   SizedBox(
                     height: 20,
                   ),

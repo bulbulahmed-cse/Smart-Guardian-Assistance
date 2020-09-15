@@ -15,6 +15,7 @@ class Dashboard_Teacher extends StatefulWidget {
 
 class _Dashboard_TeacherState extends State<Dashboard_Teacher> {
   var _userName='',_userId='',_userImages='';
+  bool isLoading=true;
 
 
 
@@ -132,7 +133,7 @@ class _Dashboard_TeacherState extends State<Dashboard_Teacher> {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: Scaffold(
-        body: SingleChildScrollView(
+        body:isLoading?Center(child: CircularProgressIndicator()):SingleChildScrollView(
           child: Column(
             children: <Widget>[
               header(context),
@@ -216,6 +217,7 @@ class _Dashboard_TeacherState extends State<Dashboard_Teacher> {
         setState(() {
           _userName = data[0]['name'];
           _userImages = data[0]['image'];
+          isLoading=false;
 
         });
 

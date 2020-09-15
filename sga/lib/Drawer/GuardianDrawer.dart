@@ -2,7 +2,10 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:sga/GuardianPage/Account.dart';
 import 'package:sga/GuardianPage/ExpenseReport.dart';
+import 'package:sga/GuardianPage/Result.dart';
+import 'package:sga/GuardianPage/StudentActivity.dart';
 import 'package:sga/GuardianPage/StudentProfile.dart';
+import 'package:sga/Notice.dart';
 import 'package:sga/main.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -49,7 +52,7 @@ class _GuardianDrawerState extends State<GuardianDrawer> {
                         Expanded(
                           flex: 3,
                           child: InkWell(
-                            onTap: ()=>Navigator.push(context, MaterialPageRoute(builder: (context) => StudentProfilePage(true),)),
+                            onTap: ()=>Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => StudentProfilePage(true),)),
                             child: CircleAvatar(
                               backgroundImage: NetworkImage(_studentImage),
                               radius: 50,
@@ -68,7 +71,7 @@ class _GuardianDrawerState extends State<GuardianDrawer> {
                     child: Column(
                       children: <Widget>[
                         InkWell(
-                          onTap: ()=>Navigator.push(context, MaterialPageRoute(builder: (context) => StudentProfilePage(true),)),
+                          onTap: ()=>Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => StudentProfilePage(true),)),
                           child: Container(
                               alignment: Alignment.centerLeft,
                               child: Text(_studentName,style: TextStyle(fontWeight: FontWeight.bold),)),
@@ -89,7 +92,7 @@ class _GuardianDrawerState extends State<GuardianDrawer> {
           ListTile(
             title: Text("Notice"),
             leading: Icon(Icons.notifications),
-            onTap: () => print('notice'),
+            onTap: () => Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => Notice())),
           ),
           ListTile(
             title: Text("Messages"),
@@ -99,22 +102,22 @@ class _GuardianDrawerState extends State<GuardianDrawer> {
           ListTile(
             title: Text("Activity"),
             leading: Icon(Icons.history),
-            onTap: () => print('Activity'),
+            onTap: () => Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => StudentActivity())),
           ),
           ListTile(
             title: Text("Result"),
             leading: Icon(Icons.equalizer),
-            onTap: () => print('Result'),
+            onTap: () => Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>Result())),
           ),
           ListTile(
             title: Text("Account"),
             leading: Icon(Icons.account_balance),
-            onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context)=>Account())),
+            onTap: () => Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>Account())),
           ),
           ListTile(
             title: Text("Expense report"),
             leading: Icon(Icons.money_off),
-            onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context)=>ExpenseReport())),
+            onTap: () => Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>ExpenseReport())),
           ),
           ListTile(
             title: Text("Logout"),

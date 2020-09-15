@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:sga/GuardianPage/Account.dart';
 import 'package:sga/GuardianPage/ExpenseReport.dart';
+import 'package:sga/GuardianPage/Result.dart';
+import 'package:sga/GuardianPage/StudentActivity.dart';
 import 'package:sga/GuardianPage/StudentProfile.dart';
 import 'package:sga/Notice.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -19,6 +21,7 @@ class Dashboard_Guardian extends StatefulWidget {
 class _Dashboard_GuardianState extends State<Dashboard_Guardian> {
 
   var _studentName='',_studentId='',_studentImage='';
+  var _isloading=true;
 
   Widget header(context) {
     return Stack(
@@ -145,6 +148,7 @@ class _Dashboard_GuardianState extends State<Dashboard_Guardian> {
         setState(() {
           _studentName = data[0]['student_name'];
           _studentImage = data[0]['image'];
+          _isloading=false;
 
         });
 
@@ -168,7 +172,7 @@ class _Dashboard_GuardianState extends State<Dashboard_Guardian> {
     return MaterialApp(
         debugShowCheckedModeBanner: false,
         home: Scaffold(
-          body: SingleChildScrollView(
+          body: _isloading?Center(child: CircularProgressIndicator()):SingleChildScrollView(
             child: Column(
               children: <Widget>[
                 header(context),
@@ -192,8 +196,14 @@ class _Dashboard_GuardianState extends State<Dashboard_Guardian> {
                   height: 155,
                   child: Row(
                     children: <Widget>[
-                      Expanded(child: box(Icons.history, 'Activity',context)),
-                      Expanded(child: box(Icons.equalizer, 'Result',context)),
+                      Expanded(child: InkWell(
+                        onTap: (){
+                          Navigator.push(context, MaterialPageRoute(builder: (context)=>StudentActivity()));
+                        },
+                          child: box(Icons.history, 'Activity',context))),
+                      Expanded(child: InkWell(
+                        onTap: ()=>Navigator.push(context, MaterialPageRoute(builder: (context)=>Result())),
+                          child: box(Icons.equalizer, 'Result',context))),
                     ],
                   ),
                 ),
