@@ -7,6 +7,7 @@ import 'package:sga/GuardianPage/ExpenseReport.dart';
 import 'package:sga/GuardianPage/Result.dart';
 import 'package:sga/GuardianPage/StudentActivity.dart';
 import 'package:sga/GuardianPage/StudentProfile.dart';
+import 'package:sga/Messenger/ChatList.dart';
 import 'package:sga/Notice.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
@@ -188,7 +189,8 @@ class _Dashboard_GuardianState extends State<Dashboard_Guardian> {
                           },
                         ),
                       ),
-                      Expanded(child: box(Icons.message, 'Messages',context)),
+                      Expanded(child: InkWell(onTap: ()=> Navigator.push(context, MaterialPageRoute(builder: (context)=>ChatList())),
+                          child: box(Icons.message, 'Messages',context))),
                     ],
                   ),
                 ),
@@ -220,7 +222,7 @@ class _Dashboard_GuardianState extends State<Dashboard_Guardian> {
                           onTap: () {
                             Navigator.push(context, MaterialPageRoute(builder: (context)=>ExpenseReport()));
                           },
-                          child: box(Icons.money_off, 'Expense Report',context))),
+                          child: box(Icons.money_off, 'Payments Report',context))),
                     ],
                   ),
                 ),
@@ -228,6 +230,11 @@ class _Dashboard_GuardianState extends State<Dashboard_Guardian> {
                   height: 155,
                   child: Row(
                     children: <Widget>[
+                      Expanded(child: InkWell(
+                          onTap: () {
+                            print("Payment");
+                          },
+                          child: box(Icons.payment, 'Payments',context))),
                       Expanded(child: InkWell(
                         child: box(Icons.remove, 'Logout', context),
                         onTap: () async {
@@ -239,7 +246,7 @@ class _Dashboard_GuardianState extends State<Dashboard_Guardian> {
                           Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => Intropage()));
                         },
                       ),),
-                      Expanded(child: SizedBox()),
+
                     ],
                   ),
                 ),

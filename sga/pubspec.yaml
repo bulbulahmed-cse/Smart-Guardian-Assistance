@@ -39,6 +39,17 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   simple_animations: ^1.3.3
+  flutter_launcher_icons: "^0.8.0"
+  flutter_launcher_name: "^0.0.1"
+  flutter_spinkit:
+
+flutter_launcher_name:
+  name: "SGA"
+
+flutter_icons:
+  android: "launcher_icon"
+  ios: true
+  image_path: "assets/images/sga.png"
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

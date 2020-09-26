@@ -5,6 +5,7 @@ import 'package:sga/GuardianPage/ExpenseReport.dart';
 import 'package:sga/GuardianPage/Result.dart';
 import 'package:sga/GuardianPage/StudentActivity.dart';
 import 'package:sga/GuardianPage/StudentProfile.dart';
+import 'package:sga/Messenger/ChatList.dart';
 import 'package:sga/Notice.dart';
 import 'package:sga/main.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -97,7 +98,7 @@ class _GuardianDrawerState extends State<GuardianDrawer> {
           ListTile(
             title: Text("Messages"),
             leading: Icon(Icons.message),
-            onTap: () => print('message'),
+            onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context)=>ChatList())),
           ),
           ListTile(
             title: Text("Activity"),
@@ -115,7 +116,11 @@ class _GuardianDrawerState extends State<GuardianDrawer> {
             onTap: () => Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>Account())),
           ),
           ListTile(
-            title: Text("Expense report"),
+            title: Text("Payments"),
+            leading: Icon(Icons.payment),
+          ),
+          ListTile(
+            title: Text("Payments report"),
             leading: Icon(Icons.money_off),
             onTap: () => Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>ExpenseReport())),
           ),

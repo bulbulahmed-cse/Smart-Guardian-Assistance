@@ -138,7 +138,7 @@ class _ResultState extends State<Result> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Student Activity'),
+        title: Text('Result'),
         actions: <Widget>[
           IconButton(
             icon: const Icon(Icons.arrow_back),

@@ -42,7 +42,7 @@ class _ExpenseReportState extends State<ExpenseReport> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Expense Report'),
+        title: Text('Payments Report'),
         actions: <Widget>[
           IconButton(
             icon: const Icon(Icons.arrow_back),

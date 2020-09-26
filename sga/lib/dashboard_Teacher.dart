@@ -2,8 +2,11 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:sga/Messenger/ChatList.dart';
 import 'package:sga/Notice.dart';
+import 'package:sga/TeacherPage/TakeAttendance.dart';
 import 'package:sga/TeacherPage/TeacherProfile.dart';
+import 'package:sga/TeacherPage/UploadMark.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 import 'main.dart';
@@ -150,7 +153,8 @@ class _Dashboard_TeacherState extends State<Dashboard_Teacher> {
                         },
                       ),
                     ),
-                    Expanded(child: box(Icons.message, 'Messages', context)),
+                    Expanded(child: InkWell(onTap: ()=>Navigator.push(context, MaterialPageRoute(builder: (context)=>ChatList())),
+                        child: box(Icons.message, 'Messages', context))),
                   ],
                 ),
               ),
@@ -159,9 +163,13 @@ class _Dashboard_TeacherState extends State<Dashboard_Teacher> {
                 child: Row(
                   children: <Widget>[
                     Expanded(
-                        child: box(Icons.equalizer, 'Upload Mark', context)),
+                        child: InkWell(
+                          onTap: ()=>Navigator.push(context, MaterialPageRoute(builder: (context)=>UploadMark())),
+                          child: box(Icons.equalizer, 'Upload Mark', context),
+                        )),
                     Expanded(
-                        child: box(Icons.assignment, 'Attendance', context)),
+                        child: InkWell(onTap: ()=>Navigator.push(context, MaterialPageRoute(builder: (context)=>TakeAttendance())),
+                            child: box(Icons.assignment, 'Attendance', context))),
                   ],
                 ),
               ),

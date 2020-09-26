@@ -1,6 +1,10 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:sga/Messenger/ChatList.dart';
+import 'package:sga/Notice.dart';
+import 'package:sga/TeacherPage/TakeAttendance.dart';
 import 'package:sga/TeacherPage/TeacherProfile.dart';
+import 'package:sga/TeacherPage/UploadMark.dart';
 import 'package:sga/main.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -88,22 +92,22 @@ class _TeacherDrawerState extends State<TeacherDrawer> {
           ListTile(
             title: Text("Notice"),
             leading: Icon(Icons.notifications),
-            onTap: () => print('notice'),
+            onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context)=>Notice())),
           ),
           ListTile(
             title: Text("Messages"),
             leading: Icon(Icons.message),
-            onTap: () => print('message'),
+            onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context)=>ChatList())),
           ),
           ListTile(
             title: Text("Attendance"),
             leading: Icon(Icons.assignment),
-            onTap: () => print('Attendance'),
+            onTap: () =>Navigator.push(context, MaterialPageRoute(builder: (context)=>TakeAttendance())),
           ),
           ListTile(
             title: Text("Mark Upload"),
             leading: Icon(Icons.equalizer),
-            onTap: () => print('Result'),
+            onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context)=>UploadMark())),
           ),
           ListTile(
             title: Text("Logout"),
